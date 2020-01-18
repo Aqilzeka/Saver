@@ -10,16 +10,23 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.shashank.sony.fancytoastlib.FancyToast;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
 
-    private Button save;
+    private Button save, alldata;
     EditText ad, soyad, yas, uni;
+    private TextView eldeet;
+    private String persons;
 
 
     @Override
@@ -32,7 +39,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         yas = findViewById(R.id.yas);
         uni = findViewById(R.id.uni);
         save = findViewById(R.id.save);
+        eldeet = findViewById(R.id.eldeet);
+        alldata = findViewById(R.id.hamsinieldeet);
         save.setOnClickListener(MainActivity.this);
+        eldeet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("Boxer");
+                parseQuery.getInBackground("BcHlsNQIVr", new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject object, ParseException e) {
+                        if (object != null && e == null){
+                            eldeet.setText("Ad: " + object.get("name") + "\n" +
+                                    "Soyad: " + object.get("Surname") + "\n" +
+                                    "Yas: " + object.get("age")+"\n" +
+                                    "Univeristet: " + object.get("University"));
+                        }
+                    }
+                });
+            }
+        });
+
+        alldata.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                persons = "";
+                ParseQuery<ParseObject> queryAll = ParseQuery.getQuery("Boxer");
+                queryAll.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
+                        if ( e==null ){
+                            if (objects.size()>0){
+                                for (ParseObject person : objects){
+                                    persons = persons + person + "\n";
+                                    
+                                }
+
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+
     }
 
 
